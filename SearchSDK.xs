@@ -10,6 +10,10 @@ extern "C" {
 
 #include "avs.h"
 
+#ifndef AVS_VERSION_3
+#define LICENSEKEY_LIMITED ""
+#endif
+
 static int
 not_here(s)
 char *s;
@@ -564,10 +568,8 @@ int
 avs_makestable(idx)
 	avs_idxHdl_t idx
 
-#ifdef AVS_VERSION_3
-
 int
-avs_open(path, mode, pIdx, license_key = LICENSEKEY_LIMITED)
+avs_open(path, mode, pIdx, license_key = 0)
 	char * path
 	char * mode
 	avs_idxHdl_t pIdx = NO_INIT
@@ -575,28 +577,19 @@ avs_open(path, mode, pIdx, license_key = LICENSEKEY_LIMITED)
 	PREINIT:
 		avs_parameters_t myparms = AVS_PARAMETERS_INIT;
 	CODE:
+#ifdef AVS_VERSION_3
+		if (!license_key) {
+			if (getenv("AVS_LICENSE_KEY"))
+				license_key = getenv("AVS_LICENSE_KEY");
+			else
+				license_key = LICENSEKEY_LIMITED;
+		}
 		myparms.license = license_key;
-		RETVAL = avs_open(&myparms, path, mode, &pIdx);
-	OUTPUT:
-	pIdx
-	RETVAL
-
-#else
-
-int
-avs_open(path, mode, pIdx)
-	char * path
-	char * mode
-	avs_idxHdl_t pIdx = NO_INIT
-	PREINIT:
-		avs_parameters_t myparms = AVS_PARAMETERS_INIT;
-	CODE:
-		RETVAL = avs_open(&myparms, path, mode, &pIdx);
-	OUTPUT:
-	pIdx
-	RETVAL
-
 #endif
+		RETVAL = avs_open(&myparms, path, mode, &pIdx);
+	OUTPUT:
+	pIdx
+	RETVAL
 
 int
 avs_querymode(idx)
@@ -767,35 +760,25 @@ void
 avs_timer(current)
      unsigned long current
 
-#ifdef AVS_VERSION_3
-
 AV *
-avs_version(license_key = LICENSEKEY_LIMITED)
+avs_version(license_key = 0)
 	char *license_key
      PREINIT:
         AV *arr;
         const char **lines;
      CODE:
 	arr = newAV();
+#ifdef AVS_VERSION_3
+	if (!license_key) {
+		if (getenv("AVS_LICENSE_KEY"))
+			license_key = getenv("AVS_LICENSE_KEY");
+		else
+			license_key = LICENSEKEY_LIMITED;
+	}
         lines = avs_version(license_key);
-        while (*lines != 0) {
-            av_push(arr, newSVpv(strdup(*lines), 0));
-            lines++;
-        }
-        RETVAL = (AV *) arr;
-     OUTPUT:
-        RETVAL
-
 #else
-
-AV *
-avs_version()
-     PREINIT:
-        AV *arr;
-        const char **lines;
-     CODE:
-	arr = newAV();
-        lines = avs_version();
+	lines = avs_version();
+#endif
         while (*lines != 0) {
             av_push(arr, newSVpv(strdup(*lines), 0));
             lines++;
@@ -803,8 +786,6 @@ avs_version()
         RETVAL = (AV *) arr;
      OUTPUT:
         RETVAL
-
-#endif
 
 
 avs_options_p_t

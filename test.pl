@@ -35,7 +35,7 @@ $loaded = 1;
 my $test = 1;
 print "ok 1\n";
 
-my @version = $ENV{AVS_LICENSE_KEY} ? avs_version($ENV{AVS_LICENSE_KEY}) : avs_version();
+my @version = avs_version();
 my $i = 0;
 while ($version[0][$i]) {
     print $version[0][$i] ."\n";
@@ -51,7 +51,7 @@ my $dir = `pwd`;
 chop $dir;
 my $av_idx;
 mkdir("$dir/testfiles", 0770) unless (-f "$dir/testfiles");
-my $status = $ENV{AVS_LICENSE_KEY} ? avs_open("$dir/testfiles", "rw", $av_idx, $ENV{AVS_LICENSE_KEY}) : avs_open("$dir/testfiles", "rw", $av_idx);
+my $status = avs_open("$dir/testfiles", "rw", $av_idx);
 if ($status eq AVS_OK) {
     print "ok 2\n";
 } else {
@@ -249,7 +249,7 @@ if ($status eq AVS_OK) {
     print "not ok 19\n";
 }
 
-@version = $ENV{AVS_LICENSE_KEY} ? avs_version($ENV{AVS_LICENSE_KEY}) : avs_version();
+@version = avs_version();
 $i = 0;
 while ($version[0][$i]) {
     print $version[0][$i] ."\n";

@@ -60,16 +60,16 @@ sub find_headers {
    
    my $headerdir = undef;
    my $libdir = undef;
-   my @libs = undef;
-
+   my %libhash = undef;
+   
    find( sub {
 	    if (/^avs\.h$/) {
 	       $headerdir = $File::Find::dir;
 	    }
 	    elsif (/lib(avs.*?[^_r])\.a$/) {
-		next if $^O eq 'solaris' && ($File::Find::dir =~ /bin64/); # we do not support 64-bits versions now
-	       push(@libs,$1);
-	       if ($File::Find::dir =~ m!$os_dir!) {  # only for pre-3.0
+	       next if $^O eq 'solaris' && ($File::Find::dir =~ /bin64/); # 64bit not supported on Solaris (yet)
+	       $libhash{$1} = 1 unless exists $libhash{$1};
+	       if ($File::Find::dir =~ m!$os_dir!) {
 		  $libdir = $File::Find::dir;
 	       }
 	    }
@@ -82,6 +82,6 @@ sub find_headers {
    Unable to find AltaVista SearchSDK library file.
    Maybe you should specify or check -a <path-to-your-AVS-SDK-installation>
 } unless $libdir; # $lib may be set but $libdir not.
-   print "Found header in $headerdir\nand library(ies) '" . join(" ", @libs) . "' in $libdir.\n";
-   return ($headerdir, $libdir, @libs);
+   print "Found header in $headerdir\nand library(ies) '" . join(" ", keys %libhash) . "' in $libdir.\n";
+   return ($headerdir, $libdir, keys %libhash);
 }

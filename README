@@ -1,4 +1,5 @@
 AltaVista::SearchSDK - Perl extensions for AltaVista Search Software Development Kit
-Version 1.00 adds support for version 3.0 of the AVS SDK.
+Version 1.00 adds support for version 3.0 of the AVS SDK
+Version 1.02 offers an easier path to upgrade for programs written for version 0.99b.
 Please refer to the documentation embedded in the module in POD format using
 perldoc SearchSDK.pm after you have opened the distribution.

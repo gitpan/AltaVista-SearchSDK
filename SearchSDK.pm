@@ -119,7 +119,7 @@ require AutoLoader;
 	     avs_version
 	     avs_create_options
 );
-$VERSION = '1.00';
+$VERSION = '1.02';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -219,12 +219,14 @@ avs_lookup_valtype(name)
 avs_makestable(idx)
 
 avs_open(path, mode, pIdx) # pre-3.0 syntax
-avs_open(path, mode, pIdx, license_key) # post-3.0 syntax
+avs_open(path, mode, pIdx, [license_key]) # post-3.0 syntax
 You'll need to pass I<license_key> if you are using AVS SDK 3.0 or
-later releases. In case you do not set license_key, the module
-will use the default LICENSEKEY_LIMITED which is valid for 500 documents.
-This key however seems to limit some functionality so it is not
-recommended for use with this module (by the author, not by AltaVista!)
+later releases. In case you do not set license_key, AND
+you don't set an environment variable named AVS_LICENSE_KEY,
+the module will use the default LICENSEKEY_LIMITED which is valid for 500 documents.
+This key however seems to limit some functionality on some platforms
+so it is not recommended for use with this module
+(recommendation by the author, not by AltaVista!)
 
 avs_querymode(idx)
 
@@ -265,7 +267,7 @@ avs_startdoc(idx, pDocId, flags, pStartLoc)
 avs_timer(current)
 
 avs_version()  # pre-3.0 syntax
-avs_version(license_key) # post-3.0 syntax
+avs_version([license_key]) # post-3.0 syntax
 
 avs_create_options(limit, timeout, flags)
 
@@ -319,9 +321,11 @@ In version 3.0, you need to pass the license key explicitly to avs_version
 your right to use the software. Previously, the key was embedded in your library.
 This module tries to detect the correct situation. In order to have
 a working program, please make sure you pass your license key to avs_version
-and avs_open (each and every call). If you do not pass a license key, the module
-will supply the default license key which allows 500 documents and seems
-to limit the workings of a number of functions.
+and avs_open (each and every call) OR that you set and environment
+variabile AVS_LICENSE_KEY prior to calling avs_open or avs_version.
+If you do not provide a license key, the module will supply the default license
+key which allows 500 documents and seems to limit the workings of a number
+of functions on some platforms.
 Please see 'INSTALLATION' for additional instructions.
 
 =head1 INSTALLATION
@@ -334,8 +338,8 @@ following:
 	make
 For version 3.0 and beyond, you'll need to set the environment variable
 AVS_LICENSE_KEY with a valid license in order to have all the tests
-execute correctly. Otherwise, some tests will fail but this
-will not necessarily mean problems with the software.
+execute correctly. Otherwise, some tests might fail on some platforms
+but this will not necessarily mean real problems with the software.
 	make test
 Verify tests have succeeded, and then...
 	make install
@@ -348,10 +352,13 @@ the license key, needed to have the software (and this module) work correctly.
 
 =head1 PLATFORM-SPECIFIC NOTES
 
+=head2 Digital Unix / Compaq Tru64 Unix
+Using the default 500-documents key yields errors during
+some tests.
+
 =head2 Solaris
 This module currently supports only the 32-bits version of the AVS SDK
-librery on this platform.
-
+library on this platform.
 
 =head1 AUTHORS
 
@@ -366,6 +373,15 @@ All rights reserved
 This program is free software, you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
+=head1 HISTORY
+
+0.99b: first release by James Turner
+1.00: first release by Davide Migliavacca, introduces support
+      for AVS SDK 3.0
+1.02: a better approach at compatibility between pre-3.0 and
+      3.0 based existing programs.
+
+
 =head1 SEE ALSO
 
 perl(1), AltaVista Search SDK documentation.
@@ -379,4 +395,11 @@ Please let me know if you get it work under other platforms or
 operating systems.
 
 =cut
+
+
+
+
+
+
+
 
